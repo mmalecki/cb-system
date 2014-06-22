@@ -37,3 +37,6 @@
 ## Acknowledgements
 This is literally a fork of [`then-system`](https://github.com/nathan7/then-system)
 reworked to use callbacks. Whole refactor wound up being about 6 lines shorter.
+
+Another fun fact: the total size of this module (including dependencies)
+with promises was 4084 lines of code, and is now reduced to 3213 lines of code.

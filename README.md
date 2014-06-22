@@ -1,10 +1,10 @@
-# then-system
+# cb-system
 
-  the `system()` you've missed
+  the `system()` you've *actually* missed
 
 ## Installation
 
-    npm install then-system
+    npm install cb-system
 
 ## API
 ### system(command)
@@ -12,9 +12,9 @@
 ### system(command, opts)
 ### system(command, args, opts)
 
-  Returns a promise for undefined.
   Uses `child_process.spawn` to spawn the process, and waits for it to exit.
-  If the process exits abnormally, the promise is rejected with an error.
+  If everything goes okay, callback is called with no arguments.
+  If the process exits abnormally, the callback is called with an error.
 
   For clarity, command is allowed to be an array, for cases like `vmadm boot`, where `vmadm` clearly isn't a very useful description of what command is being run.
   This only makes a difference for error reporting.
@@ -34,3 +34,6 @@
   * code: exit code (integer)
   * message: ``'`' command + '` exited with ' + err.code + ': ' + err.stderr``
 
+## Acknowledgements
+This is literally a fork of [`then-system`](https://github.com/nathan7/then-system)
+reworked to use callbacks. Whole refactor wound up being about 6 lines shorter.

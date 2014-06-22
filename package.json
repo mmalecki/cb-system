@@ -1,11 +1,11 @@
 {
-  "name": "then-system",
-  "version": "1.0.2",
+  "name": "cb-system",
+  "version": "0.0.0",
   "description": "the system() you've been missing",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/nathan7/then-system.git"
+    "url": "git://github.com/mmalecki/cb-system.git"
   },
   "keywords": [
     "system",
@@ -13,14 +13,17 @@
     "spawn",
     "utility"
   ],
-  "author": "Nathan Zadoks",
+  "contributors": [
+    "Nathan Zadoks"
+  ],
+  "author": "Maciej Małecki <me@mmalecki.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/nathan7/then-system/issues"
+    "url": "https://github.com/mmalecki/cb-system/issues"
   },
-  "homepage": "https://github.com/nathan7/then-system",
+  "homepage": "https://github.com/mmalecki/cb-system",
   "dependencies": {
-    "promise": "^5.0.0",
-    "sprom": "^2.0.2"
+    "bl": "^0.8.0",
+    "exit-error": "^1.0.0"
   }
 }

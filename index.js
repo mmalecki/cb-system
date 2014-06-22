@@ -1,49 +1,43 @@
 'use strict';
-var Promise = require('promise')
-  , spawn = require('child_process').spawn
-  , sprom = require('sprom')
+var spawn = require('child_process').spawn
+  , bl = require('bl')
+  , exitError = require('exit-error')
 
 module.exports =
-function os(bin, args, opts) {
-  return new Promise(function(resolve, reject) {
-    if (!Array.isArray(args)) {
-      opts = args
-      args = []
-    }
+function os(bin, args, opts, cb) {
+  cb = cb || opts || args
+  if (!Array.isArray(args)) {
+    opts = args
+    args = []
+  }
 
-    var name = bin
-    if (Array.isArray(bin)) {
-      name = bin.join(' ')
-      args = bin.concat(args)
-      bin = args.shift()
-    }
+  var name = bin
+  if (Array.isArray(bin)) {
+    name = bin.join(' ')
+    args = bin.concat(args)
+    bin = args.shift()
+  }
 
-    opts = opts
-      ? Object.create(opts)
-      : {}
-    opts.stdio = [process.stdin, process.stdout, 'pipe']
+  opts = opts
+    ? Object.create(opts)
+    : {}
+  opts.stdio = [process.stdin, process.stdout, 'pipe']
 
-    var child = spawn(bin, args, opts)
-      , stderr = sprom(stderr)
+  var child = spawn(bin, args, opts)
+    , stderr
 
-    if (!opts.quiet) child.stderr.pipe(process.stderr)
+  if (!opts.quiet) child.stderr.pipe(process.stderr)
 
-    child.on('error', reject)
-    child.on('exit', function(code, signal) {
-      if (code === 0 && !signal) return resolve()
-      stderr.then(function(stderr) {
-        var err = signal
-          ? new Error('`' + name + '` killed by signal `' + signal + '`')
-          : new Error('`' + name + '` exited with ' + code)
+  child.stderr.pipe(bl(function (err, data) {
+    stderr = data
+  }))
 
-        err.name = 'ExitError'
-        err.message += ': ' + stderr
-        err.code = code
-        err.signal = signal
-        err.stderr = stderr
-
-        reject(err)
-      })
-    })
+  child.on('error', cb)
+  child.on('close', function(code, signal) {
+    if (code === 0 && !signal) return cb()
+    var err = exitError(name, code, signal)
+    err.message += ': ' + stderr
+    err.stderr = stderr
+    cb(err)
   })
 }

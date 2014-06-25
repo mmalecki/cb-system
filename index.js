@@ -28,16 +28,25 @@ function os(bin, args, opts, cb) {
 
   if (!opts.quiet) child.stderr.pipe(process.stderr)
 
-  child.stderr.pipe(bl(function (err, data) {
+  function gimmeStderr(cb) {
+    if (stderr) return cb(stderr)
+    child.stderr.on('end', cb.bind(null, stderr))
+  }
+
+  child.stderr.pipe(bl(function(err, data) {
+    if (err) return cb(err)
     stderr = data
   }))
 
-  child.on('error', cb)
-  child.on('close', function(code, signal) {
+  child.on('exit', function(code, signal) {
     if (code === 0 && !signal) return cb()
-    var err = exitError(name, code, signal)
-    err.message += ': ' + stderr
-    err.stderr = stderr
-    cb(err)
+    gimmeStderr(function(stderr) {
+      var err = exitError(name, code, signal)
+      err.message += ': ' + stderr
+      err.stderr = stderr
+      cb(err)
+    })
   })
+
+  child.on('error', cb)
 }
